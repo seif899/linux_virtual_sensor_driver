@@ -14,6 +14,11 @@ struct vs_device {
     struct class *class;
     struct device *dev;
     // add: ring buffer, locks, wait queue, timer, stats ...
+    /* sampler */
+    struct timer_list timer;
+    unsigned long     period_jiffies;
+    u32               rate_hz;
+
 };
 
 #endif

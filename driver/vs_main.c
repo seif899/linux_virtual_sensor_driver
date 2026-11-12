@@ -4,8 +4,9 @@
 
 #include "vs_device.h"
 #include "vs_chrdev.h"
+#include "vs_sampler.h"
 
-static struct vs_device vs_dev;     /* the one device instance */
+static struct vs_device vs_dev;
 
 static int __init vs_init(void)
 {
@@ -15,13 +16,20 @@ static int __init vs_init(void)
     if (ret)
         return ret;
 
-    /* later steps add: vs_ringbuf_init(), vs_sampler_start(), ... here */
+    ret = vs_sampler_start(&vs_dev, VS_DEFAULT_RATE_HZ);
+    if (ret)
+        goto err_chrdev;
+
     return 0;
+
+err_chrdev:
+    vs_chrdev_unregister(&vs_dev);
+    return ret;
 }
 
 static void __exit vs_exit(void)
 {
-    /* later: stop things in REVERSE order of init */
+    vs_sampler_stop(&vs_dev);          /* reverse order of init */
     vs_chrdev_unregister(&vs_dev);
     pr_info("unloaded\n");
 }
