@@ -13,7 +13,7 @@ int vs_chrdev_register(struct vs_device *vs){
     if (ret)
         return ret;
 
-    dev_init(&vs->cdev, &vs_fops);
+    cdev_init(&vs->cdev, &vs_fops);
     vs->cdev.owner = THIS_MODULE;
     ret = cdev_add(&vs->cdev, vs->devt, 1);
     if (ret)
