@@ -4,6 +4,7 @@
 #include <linux/types.h>
 #include <linux/cdev.h>
 #include <linux/device.h>
+#include "vs_ringbuf.h"
 
 #define VS_DEVICE_NAME "virtual_sensor"
 #define VS_CLASS_NAME  "vsensor"

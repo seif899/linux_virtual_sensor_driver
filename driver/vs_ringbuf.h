@@ -4,7 +4,6 @@
 #include <linux/types.h>
 #include <linux/spinlock.h>
 #include "vs_uapi.h"
-#include "vs_ringbuf.h"
 
 struct vs_ringbuf {
     struct vs_sample *buf;
