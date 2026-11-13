@@ -5,9 +5,9 @@
 
 struct vs_sample {
     __u64 timestamp_ns;
-    __s32 temperature_mC;   /* milli-degrees Celsius: 25000 = 25.000 C */
+    __s32 temperature_mC;
     __s32 pressure_Pa;
-    __s32 accel_mg[3];      /* x, y, z in milli-g: 1000 = 1 g */
-};
-
+    __s32 accel_mg[3];
+    __u32 reserved;         /* explicit padding, always 0 */
+};                          /* 8 + 4 + 4 + 12 + 4 = 32 bytes */
 #endif /* VS_UAPI_H */

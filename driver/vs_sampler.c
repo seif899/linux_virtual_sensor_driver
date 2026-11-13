@@ -19,6 +19,7 @@ static void vs_sample_generate(struct vs_sample *s)
     s->accel_mg[0]     = (s32)get_random_u32_below(201)  - 100;
     s->accel_mg[1]     = (s32)get_random_u32_below(201)  - 100;
     s->accel_mg[2]     = 1000 + (s32)get_random_u32_below(201) - 100; /* gravity */
+    s->reserved = 0;
 }
 
 /* Runs in SOFTIRQ (atomic) context: no sleeping, no mutexes, no copy_to_user. */
@@ -28,12 +29,8 @@ static void vs_sampler_fn(struct timer_list *t)
     struct vs_sample s;
 
     vs_sample_generate(&s);
+    vs_ringbuf_push(&vs->rb, &s);
 
-    pr_info("sample: t=%lld ns temp=%d mC press=%d Pa accel=(%d,%d,%d) mg\n",
-            (long long)s.timestamp_ns, s.temperature_mC, s.pressure_Pa,
-            s.accel_mg[0], s.accel_mg[1], s.accel_mg[2]);
-
-    /* Timers are one-shot: re-arm ourselves to make it periodic. */
     mod_timer(&vs->timer, jiffies + vs->period_jiffies);
 }
 

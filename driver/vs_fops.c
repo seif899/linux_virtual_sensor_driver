@@ -27,11 +27,25 @@ static int vs_release(struct inode *inode, struct file *filp)
 static ssize_t vs_read(struct file *filp, char __user *buf,
                        size_t count, loff_t *ppos)
 {
-    static const char msg[] = "hello from virtual_sensor\n";
+    struct vs_device *vs = filp->private_data;
+    struct vs_sample s;
+    size_t done = 0;
 
-    return simple_read_from_buffer(buf, count, ppos, msg, sizeof(msg) - 1);
+    if (count < sizeof(s))
+        return -EINVAL;               /* must have room for a whole sample */
+
+    while (done + sizeof(s) <= count) {
+        if (!vs_ringbuf_pop(&vs->rb, &s))
+            break;                    /* buffer empty */
+
+        if (copy_to_user(buf + done, &s, sizeof(s)))
+            return done ? done : -EFAULT;
+
+        done += sizeof(s);
+    }
+
+    return done ? done : -EAGAIN;     /* nothing yet (blocking comes in Step 5) */
 }
-
 const struct file_operations vs_fops = {
     .owner   = THIS_MODULE,
     .open    = vs_open,

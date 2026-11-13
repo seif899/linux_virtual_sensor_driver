@@ -19,6 +19,9 @@ struct vs_device {
     unsigned long     period_jiffies;
     u32               rate_hz;
 
+    /* data path */
+    struct vs_ringbuf rb;
+
 };
 
 #endif
